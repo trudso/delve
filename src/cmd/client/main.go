@@ -15,6 +15,7 @@ func main() {
 	rl.SetTargetFPS(100)
 
 	level := createLevel()
+	defer nodes.Close(&level)
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()

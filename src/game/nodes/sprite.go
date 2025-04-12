@@ -14,6 +14,10 @@ func (s Sprite) Draw() {
 	rl.DrawTexture(s.Texture, 0, 0, rl.White)
 }
 
+func (s Sprite) Close() {
+	rl.UnloadTexture(s.Texture)
+}
+
 func NewSprite(source string) Sprite {
 	sprite := Sprite{
 		BaseNode:   NewBaseNode(source),

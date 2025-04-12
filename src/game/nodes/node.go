@@ -14,6 +14,7 @@ type Node interface {
 	GetTransform() Transform
 	Move(deltaTime float32)
 	Draw()
+	Close()
 }
 
 type BaseNode struct {
@@ -57,10 +58,14 @@ func (n BaseNode) GetTransform() Transform {
 	return n.Transform
 }
 
-func (n *BaseNode) Move(deltaTime float32) {
-}
+func (n *BaseNode) Move(deltaTime float32) {}
 
-func (n BaseNode) Draw() {
+func (n BaseNode) Draw() {}
+
+func (n BaseNode) Close() {
+	for _, child := range n.Children {
+		Close(child)
+	}
 }
 
 func NewBaseNode(id string) BaseNode {
@@ -87,4 +92,8 @@ func Update(n Node, deltaTime float32) {
 	}
 
 	rl.PopMatrix()
+}
+
+func Close(n Node) {
+	n.Close()
 }
