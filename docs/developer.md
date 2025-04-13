@@ -12,32 +12,44 @@ The best solution is probably the ability to save/load snapshots directly in the
 
 ## Architecture
 
-* State based
-* Scene based
-
-type Transform struct {
-    Position Vector2
-    Scale Vector2
-}
-
-type Scene struct {
-    SceneId string
-    Tranform Transform
-    Children []Scene 
-}
-
-type GameState struct {
-    CurrentScene *Scene
-    CurrentSceneId string
-    Scenes []Scene
-}
-
-// elements that should be run on each frame
-type Updatable interface {
-    Update()
-}
+Node based architecture
 
 ## Folder layout
 
 src/scenes/ -> all individual scenes: players, bullets, monsters, items ...
 src/levels/ -> ie. town, dungeon_level_1, ... 
+
+## Missing nodes
+
+* NetworkingNode
+This node is responsible for networking. Both the client and server will need this node.
+The node will need a root node reference for which it will traverse the scene tree. and replicate any changes to the authority.
+
+* AudioNode
+
+
+## Networking
+
+Any scene tree that incoorporates networking needs to have a networking node. This node will synchronize the scene tree with the server (authority).
+
+TODO:
+* some indicator of who is the authority for a given field
+    * is there some sort of trait/annotation functionality in golang ?
+* determine serialization format: protobuf, ...
+* on a side note, the serialization can also be used for snapshots  
+* upon connecting to the server, the client will need to request the current state of the scene tree ( which is a full replication of the current state of the scene tree)
+* game loop updates should only be changed fields, and fields that the client is allowed to see.
+* we can use the node-path as part of the key in the replication map.
+    * ie. /level1/players/player2 {
+        name: "Vihaela",
+        transform: {
+            position: {
+                x: 10,
+                y: 12,
+            }
+            rotation: {
+                x: 43,
+                y: 0,
+            }
+        }
+    }
