@@ -6,11 +6,13 @@ import (
 )
 
 type Player struct {
+	// nodes
 	nodes.BaseNode
 	bodySprite *nodes.Sprite
 	leftHandSprite *nodes.Sprite
 	rightHandSprite *nodes.Sprite
 	
+	// attributes
 	Speed float32
 }
 

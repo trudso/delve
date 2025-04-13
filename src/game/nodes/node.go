@@ -5,6 +5,7 @@ import (
 )
 
 type Node interface {
+	// tree functions
 	GetId() string
 	GetParent() Node
 	SetParent(node Node)
@@ -12,8 +13,21 @@ type Node interface {
 	GetChild(id string) Node
 	GetChildren() []Node
 	GetTransform() Transform
+
+	// Update functions
+	// Input: mostly to support nodes where the input does not depend on deltaTime
+	//  or for splitting input and tranformation logic, if that is something that rocks your boat.
+	Input() 
+
+	// Move: update local transform based on deltaTime
+	// 	This is a good place to check for movement based input
 	Move(deltaTime float32)
+
+	// Draw: draw the node
 	Draw()
+
+	// Cleanup functions
+	// Close: clean up any resources
 	Close()
 }
 
@@ -58,6 +72,8 @@ func (n BaseNode) GetTransform() Transform {
 	return n.Transform
 }
 
+func (n *BaseNode) Input() {}
+
 func (n *BaseNode) Move(deltaTime float32) {}
 
 func (n BaseNode) Draw() {}
@@ -68,6 +84,7 @@ func (n BaseNode) Close() {
 	}
 }
 
+// constructors
 func NewBaseNode(id string) BaseNode {
 	return BaseNode{
 		Id: id,
@@ -77,20 +94,28 @@ func NewBaseNode(id string) BaseNode {
 	}
 }
 
+// general functions
 func Update(n Node, deltaTime float32) {
+	// update movement
+	n.Input()
 	n.Move(deltaTime)
+
+	// apply transforms
 	rl.PushMatrix()
 	transform := n.GetTransform()
 	rl.Translatef(transform.Position.X, transform.Position.Y, 0)
 	rl.Rotatef(transform.Rotation.X, transform.Rotation.Y, 0, 1)		
 	rl.Scalef(transform.Scale.X, transform.Scale.Y, 1)
 
+	// draw node
 	n.Draw()
 
+	// update children
 	for _, child := range n.GetChildren() {
 		Update(child, deltaTime)
 	}
 
+	// pop transforms
 	rl.PopMatrix()
 }
 

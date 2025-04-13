@@ -10,6 +10,8 @@ import (
 
 func main() {
 	rl.InitWindow(800, 600, "Delve")
+	rl.SetTraceLogLevel(rl.LogDebug)
+
 	defer rl.CloseWindow()
 
 	rl.SetTargetFPS(100)
