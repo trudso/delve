@@ -7,13 +7,13 @@ import (
 
 type TestLevel struct {
 	nodes.BaseNode
-	Player *scenes.Player
+	Player   *scenes.Player
 	Snapshot *scenes.Snapshot
 }
 
 func NewTestLevel() TestLevel {
 	player := scenes.NewPlayer()
-	snapshot := scenes.NewSnapshot()
+	snapshot := scenes.NewSnapshot("/")
 
 	level := TestLevel{
 		BaseNode: nodes.NewBaseNode("TestLevel"),

@@ -8,10 +8,10 @@ import (
 type Player struct {
 	// nodes
 	nodes.BaseNode
-	bodySprite *nodes.Sprite
-	leftHandSprite *nodes.Sprite
+	bodySprite      *nodes.Sprite
+	leftHandSprite  *nodes.Sprite
 	rightHandSprite *nodes.Sprite
-	
+
 	// attributes
 	Speed float32
 }
@@ -41,9 +41,9 @@ func NewPlayer() Player {
 	rightHandSprite.Transform.Position.X -= 30
 
 	player := Player{
-		BaseNode:   nodes.NewBaseNode("player"),
-		bodySprite: &bodySprite,
-		leftHandSprite: &leftHandSprite,
+		BaseNode:        nodes.NewBaseNode("player"),
+		bodySprite:      &bodySprite,
+		leftHandSprite:  &leftHandSprite,
 		rightHandSprite: &rightHandSprite,
 
 		Speed: 100,

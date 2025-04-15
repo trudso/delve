@@ -1,6 +1,8 @@
 package nodes
 
 import (
+	"reflect"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -17,7 +19,7 @@ type Node interface {
 	// Update functions
 	// Input: mostly to support nodes where the input does not depend on deltaTime
 	//  or for splitting input and tranformation logic, if that is something that rocks your boat.
-	Input() 
+	Input()
 
 	// Move: update local transform based on deltaTime
 	// 	This is a good place to check for movement based input
@@ -29,12 +31,17 @@ type Node interface {
 	// Cleanup functions
 	// Close: clean up any resources
 	Close()
+
+	// Serialization functions
+	GetDataSet(onlyChangedFields bool) map[string]any
+	ApplyDataSet(map[string]any)
 }
 
+// Base node implementation
 type BaseNode struct {
-	Id string
-	Parent Node
-	Children []Node
+	Id        string
+	Parent    Node
+	Children  []Node
 	Transform Transform
 }
 
@@ -84,12 +91,53 @@ func (n BaseNode) Close() {
 	}
 }
 
+func (n BaseNode) GetDataSet(onlyChangedFields bool) map[string]any {
+	children := make(map[string]any)
+	for _, child := range n.Children {
+		children[child.GetId()] = NodeToDataSet(child, onlyChangedFields)
+	}
+
+	res := map[string]any{
+		"id":        n.Id,
+		"type":      reflect.TypeOf(n).Kind().String(),
+		"transform": TransformToDataSet(n.Transform, onlyChangedFields),
+		"children":  children,
+	}
+
+	return res
+}
+
+func (n *BaseNode) ApplyDataSet(data map[string]any) {
+	if data["id"] != nil {
+		n.Id = data["id"].(string)
+	}
+
+	if d, found := data["transform"]; found {
+		n.Transform.ApplyDataSet(d.(map[string]any))
+	}
+
+	if d, found := data["children"]; found {
+		children := d.(map[string]any)
+		for key, childData := range children {
+			// TODO[mt]: add support for deletion and for node tree mutation
+			// modify existing child
+			existingChild := n.GetChild(key)
+			if existingChild != nil {
+				existingChild.ApplyDataSet(childData.(map[string]any))
+			} else {
+				newChild := CreateNodeFromDataSet(childData.(map[string]any))
+				n.AddChild(newChild)
+			}
+		}
+	}
+}
+
 // constructors
 func NewBaseNode(id string) BaseNode {
 	return BaseNode{
-		Id: id,
-		Parent: nil,
-		Children: make([]Node, 0),
+		Id:        id,
+		Parent:    nil,
+		Children:  make([]Node, 0),
 		Transform: NewTransform(),
 	}
 }
@@ -104,7 +152,7 @@ func Update(n Node, deltaTime float32) {
 	rl.PushMatrix()
 	transform := n.GetTransform()
 	rl.Translatef(transform.Position.X, transform.Position.Y, 0)
-	rl.Rotatef(transform.Rotation.X, transform.Rotation.Y, 0, 1)		
+	rl.Rotatef(transform.Rotation.X, transform.Rotation.Y, 0, 1)
 	rl.Scalef(transform.Scale.X, transform.Scale.Y, 1)
 
 	// draw node
@@ -121,4 +169,17 @@ func Update(n Node, deltaTime float32) {
 
 func Close(n Node) {
 	n.Close()
+}
+
+func NodeToDataSet(n Node, onlyChangedFields bool) map[string]any {
+	return n.GetDataSet(onlyChangedFields)
+}
+
+func ApplyDataSet(n Node, data map[string]any) Node {
+	n.ApplyDataSet(data)
+	return n
+}
+
+func CreateNodeFromDataSet(data map[string]any) Node {
+	return GetGameContext().GetNodeCreator().CreateNode(data["type"].(string), data)
 }
