@@ -1,7 +1,6 @@
 package nodes
 
 import (
-	"reflect"
 	"strings"
 )
 
@@ -63,7 +62,7 @@ func (c *BaseNodeCreator) Register(typeName string, instantiator NodeInstantiato
 func NewBaseNodeCreator() BaseNodeCreator {
 	return BaseNodeCreator{
 		nodeInstantiators: map[string]NodeInstantiator{
-			reflect.TypeOf(Sprite{}).Kind().String(): NewSpriteFromDataSet,
+			SPRITE_NODE: NewSpriteFromDataSet,
 		},
 	}
 }

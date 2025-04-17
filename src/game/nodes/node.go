@@ -1,14 +1,12 @@
 package nodes
 
 import (
-	"reflect"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type Node interface {
 	// tree functions
-	GetId() string
+	GetId() string // unique name of the node ( by parent )
 	GetParent() Node
 	SetParent(node Node)
 	AddChild(node Node)
@@ -28,9 +26,9 @@ type Node interface {
 	// Draw: draw the node
 	Draw()
 
-	// Cleanup functions
-	// Close: clean up any resources
-	Close()
+	// Initialization and cleanup
+	Init()
+	Delete()
 
 	// Serialization functions
 	GetDataSet(onlyChangedFields bool) map[string]any
@@ -40,11 +38,13 @@ type Node interface {
 // Base node implementation
 type BaseNode struct {
 	Id        string
+	nodeType  string
 	Parent    Node
 	Children  []Node
 	Transform Transform
 }
 
+// Tree functions
 func (n BaseNode) GetId() string {
 	return n.Id
 }
@@ -79,18 +79,27 @@ func (n BaseNode) GetTransform() Transform {
 	return n.Transform
 }
 
+// Behavioural overridables
 func (n *BaseNode) Input() {}
 
 func (n *BaseNode) Move(deltaTime float32) {}
 
 func (n BaseNode) Draw() {}
 
-func (n BaseNode) Close() {
+// Initialization and cleanup
+func (n *BaseNode) Init() {
 	for _, child := range n.Children {
-		Close(child)
+		InitNode(child)
 	}
 }
 
+func (n BaseNode) Delete() {
+	for _, child := range n.Children {
+		DeleteNode(child)
+	}
+}
+
+// Serialization for snapshots and networking
 func (n BaseNode) GetDataSet(onlyChangedFields bool) map[string]any {
 	children := make(map[string]any)
 	for _, child := range n.Children {
@@ -99,7 +108,7 @@ func (n BaseNode) GetDataSet(onlyChangedFields bool) map[string]any {
 
 	res := map[string]any{
 		"id":        n.Id,
-		"type":      reflect.TypeOf(n).Kind().String(),
+		"type":      n.nodeType,
 		"transform": TransformToDataSet(n.Transform, onlyChangedFields),
 		"children":  children,
 	}
@@ -133,16 +142,17 @@ func (n *BaseNode) ApplyDataSet(data map[string]any) {
 }
 
 // constructors
-func NewBaseNode(id string) BaseNode {
+func NewBaseNode(nodeType string, id string) BaseNode {
 	return BaseNode{
 		Id:        id,
+		nodeType:  nodeType,
 		Parent:    nil,
 		Children:  make([]Node, 0),
 		Transform: NewTransform(),
 	}
 }
 
-// general functions
+// Game loop functionality
 func Update(n Node, deltaTime float32) {
 	// update movement
 	n.Input()
@@ -167,8 +177,13 @@ func Update(n Node, deltaTime float32) {
 	rl.PopMatrix()
 }
 
-func Close(n Node) {
-	n.Close()
+// Node functions
+func InitNode(n Node) {
+	n.Init()
+}
+
+func DeleteNode(n Node) {
+	n.Delete()
 }
 
 func NodeToDataSet(n Node, onlyChangedFields bool) map[string]any {

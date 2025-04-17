@@ -2,41 +2,43 @@ package scenes
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/trudso/delve/game/comm"
 	"github.com/trudso/delve/game/nodes"
 )
+
+const SNAPSHOT_NODE = "Snapshot"
 
 type Snapshot struct {
 	nodes.BaseNode
 
-	rootNodeName string
-	rootNode     nodes.Node // the root node to replicate
+	rootDirectory string
+	rootNodeName  string
+	RootNode      nodes.Node // the root node to replicate
 }
 
-func NewSnapshot(rootNodeName string) Snapshot {
+func NewSnapshot(id string, rootNodeName string) Snapshot {
 	return Snapshot{
-		rootNodeName: rootNodeName,
+		BaseNode:      nodes.NewBaseNode(SNAPSHOT_NODE, id),
+		rootNodeName:  rootNodeName,
+		rootDirectory: "snapshots",
 	}
 }
 
-func (s *Snapshot) GetRootNode() nodes.Node {
-	if s.rootNode == nil {
-		s.rootNode = nodes.GetGameContext().GetNodeTree().GetNode(s.rootNodeName)
-	}
-
-	return s.rootNode
+func (s *Snapshot) Init() {
+	s.RootNode = nodes.GetGameContext().GetNodeTree().GetNode(s.rootNodeName)
 }
 
 func (s *Snapshot) Input() {
 	if rl.IsKeyDown(rl.KeyLeftShift) {
 		if rl.IsKeyReleased(rl.KeyOne) {
-			s.SaveSnapshot("snapshot1")
+			s.SaveSnapshot("snapshot1.data")
 		}
 	}
 }
 
 func (s Snapshot) SaveSnapshot(name string) {
-	data := nodes.NodeToDataSet(s.GetRootNode(), false)
-	rl.TraceLog(rl.LogDebug, "snapshot %s: %+v", name, data)
+	mapData := nodes.NodeToDataSet(s.RootNode, false)
+	comm.SaveAsJson(s.rootDirectory, name, mapData)
 }
 
 func LoadSnapshot(name string) nodes.Node {

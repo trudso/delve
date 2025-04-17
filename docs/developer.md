@@ -53,3 +53,9 @@ TODO:
             }
         }
     }
+* changeset generators to be able determine if values has changed
+* constructors should only take primitive types that can be serialized in the creation function. 
+    - All derived nodes references should be derived during a init fase. 
+    - This is to ensure that the tree has been created before any querying of the tree is performed.
+    - To enforce this constraint we can ensure that the game context is not created until after the level has been created.
+

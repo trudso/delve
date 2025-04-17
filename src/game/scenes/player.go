@@ -5,6 +5,8 @@ import (
 	"github.com/trudso/delve/game/nodes"
 )
 
+const PLAYER_NODE = "player"
+
 type Player struct {
 	// nodes
 	nodes.BaseNode
@@ -33,15 +35,22 @@ func (p *Player) Move(deltaTime float32) {
 	p.Transform.Rotation.X += 20 * deltaTime
 }
 
+func (p Player) GetDataSet(onlyChangedFields bool) map[string]any {
+	result := p.BaseNode.GetDataSet(onlyChangedFields)
+	result["speed"] = p.Speed
+	return result
+}
+
+
 func NewPlayer() Player {
-	bodySprite := nodes.NewSprite("res/players/green_character.png")
-	leftHandSprite := nodes.NewSprite("res/players/green_hand.png")
-	rightHandSprite := nodes.NewSprite("res/players/green_hand.png")
+	bodySprite := nodes.NewSprite("body", "res/players/green_character.png")
+	leftHandSprite := nodes.NewSprite("left_hand", "res/players/green_hand.png")
+	rightHandSprite := nodes.NewSprite("right_hand", "res/players/green_hand.png")
 	leftHandSprite.Transform.Position.X += 30
 	rightHandSprite.Transform.Position.X -= 30
 
 	player := Player{
-		BaseNode:        nodes.NewBaseNode("player"),
+		BaseNode:        nodes.NewBaseNode(PLAYER_NODE, "player1"),
 		bodySprite:      &bodySprite,
 		leftHandSprite:  &leftHandSprite,
 		rightHandSprite: &rightHandSprite,

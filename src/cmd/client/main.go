@@ -15,11 +15,14 @@ func main() {
 
 	rl.SetTargetFPS(100)
 
-	// create game context and level
-	createGameContext()
-	level := createLevel()
-	nodes.GetGameContext().GetNodeTree().SetRootNode(&level)
-	defer nodes.Close(&level)
+	// create test level
+	level := levels.NewTestLevel()
+	defer nodes.DeleteNode(&level)
+
+	// create game context
+	createGameContext(&level)
+
+	nodes.InitNode(&level)
 
 	// game loop
 	for !rl.WindowShouldClose() {
@@ -34,14 +37,12 @@ func main() {
 	}
 }
 
-func createLevel() levels.TestLevel {
-	return levels.NewTestLevel()
-}
-
-func createGameContext() {
+func createGameContext(rootNode nodes.Node) {
 	nodeCreator := nodes.NewBaseNodeCreator()
 	//TODO[mt]: Add node instantiators for levels and scenes
 
 	nodeTree := nodes.NewBaseNodeTree()
 	nodes.NewGameContext(nodeCreator, &nodeTree)
+
+	nodes.GetGameContext().GetNodeTree().SetRootNode(rootNode)
 }

@@ -4,6 +4,8 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+const SPRITE_NODE = "Sprite"
+
 type Sprite struct {
 	BaseNode
 	Source  string
@@ -14,13 +16,14 @@ func (s Sprite) Draw() {
 	rl.DrawTexture(s.Texture, 0, 0, rl.White)
 }
 
-func (s Sprite) Close() {
+func (s Sprite) Delete() {
 	rl.UnloadTexture(s.Texture)
+	s.BaseNode.Delete()
 }
 
-func NewSprite(source string) Sprite {
+func NewSprite(id string, source string) Sprite {
 	sprite := Sprite{
-		BaseNode: NewBaseNode(source),
+		BaseNode: NewBaseNode(SPRITE_NODE, id),
 		Source:   source,
 		Texture:  rl.LoadTexture(source),
 	}
@@ -30,10 +33,16 @@ func NewSprite(source string) Sprite {
 }
 
 func NewSpriteFromDataSet(data map[string]any) Node {
-	if source, found := data["source"]; found {
-		sprite := NewSprite(source.(string))
-		return &sprite
+	id, found := data["id"]
+	if !found {
+		panic( "No id specified for sprite")
 	}
 
-	panic("No source specified for sprite")
+	source, found := data["source"]
+	if !found {
+		panic( "No source specified for sprite")
+	}
+
+	sprite := NewSprite(id.(string), source.(string))
+	return &sprite
 }
