@@ -1,31 +1,29 @@
-package scenes
+package engine
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/trudso/delve/game/comm"
-	"github.com/trudso/delve/game/nodes"
 )
 
 const SNAPSHOT_NODE = "Snapshot"
 
 type Snapshot struct {
-	nodes.BaseNode
+	BaseNode
 
 	rootDirectory string
 	rootNodeName  string
-	RootNode      nodes.Node // the root node to replicate
+	RootNode      Node // the root node to replicate
 }
 
 func NewSnapshot(id string, rootNodeName string) Snapshot {
 	return Snapshot{
-		BaseNode:      nodes.NewBaseNode(SNAPSHOT_NODE, id),
+		BaseNode:      NewBaseNode(SNAPSHOT_NODE, id),
 		rootNodeName:  rootNodeName,
 		rootDirectory: "snapshots",
 	}
 }
 
 func (s *Snapshot) Init() {
-	s.RootNode = nodes.GetGameContext().GetNodeTree().GetNode(s.rootNodeName)
+	s.RootNode = GetGameContext().GetNodeTree().GetNode(s.rootNodeName)
 }
 
 func (s *Snapshot) Input() {
@@ -51,12 +49,12 @@ func (s *Snapshot) Input() {
 }
 
 func (s Snapshot) SaveSnapshot(name string) {
-	mapData := nodes.NodeToDataSet(s.RootNode, false)
-	comm.SaveJson(s.rootDirectory, name, mapData)
+	mapData := NodeToDataSet(s.RootNode, false)
+	SaveJson(s.rootDirectory, name, mapData)
 }
 
 func (s Snapshot) LoadSnapshot(name string) {
-	mapData := comm.LoadJson(s.rootDirectory, name)
-	node := nodes.DataSetToNode(mapData)
-	nodes.GetGameContext().GetNodeTree().SetRootNode(node)
+	mapData := LoadJson(s.rootDirectory, name)
+	node := DataSetToNode(mapData)
+	GetGameContext().GetNodeTree().SetRootNode(node)
 }

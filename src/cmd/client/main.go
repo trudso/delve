@@ -5,7 +5,7 @@ import (
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/trudso/delve/game/levels"
-	"github.com/trudso/delve/game/nodes"
+	"github.com/trudso/delve/engine"
 	"github.com/trudso/delve/game/scenes"
 )
 
@@ -18,12 +18,12 @@ func main() {
 
 	// create test level
 	level := levels.NewTestLevel()
-	defer nodes.DeleteNode(&level)
+	defer engine.DeleteNode(&level)
 
 	// create game context
 	createGameContext(&level)
 
-	nodes.InitNode(&level)
+	engine.InitNode(&level)
 
 	// game loop
 	for !rl.WindowShouldClose() {
@@ -32,21 +32,21 @@ func main() {
 		rl.ClearBackground(rl.RayWhite)
 		rl.DrawText(fmt.Sprintf("player pos: %+v", level.Player.Transform.Position), 100, 20, 20, rl.LightGray)
 
-		nodes.Update(nodes.GetGameContext().GetNodeTree().GetRootNode(), rl.GetFrameTime())
+		engine.Update(engine.GetGameContext().GetNodeTree().GetRootNode(), rl.GetFrameTime())
 
 		rl.EndDrawing()
 	}
 }
 
-func createGameContext(rootNode nodes.Node) {
-	nodeCreator := nodes.NewBaseNodeCreator()
+func createGameContext(rootNode engine.Node) {
+	nodeCreator := engine.NewBaseNodeCreator()
 	nodeCreator.Register(scenes.PLAYER_NODE, scenes.NewPlayerFromDataSet)
 	nodeCreator.Register(levels.TESTLEVEL_NODE, levels.NewTestLevelFromDataSet)
 
 	//TODO[mt]: Add node instantiators for levels and scenes
 
-	nodeTree := nodes.NewBaseNodeTree()
-	nodes.NewGameContext(nodeCreator, &nodeTree)
+	nodeTree := engine.NewBaseNodeTree()
+	engine.NewGameContext(nodeCreator, &nodeTree)
 
-	nodes.GetGameContext().GetNodeTree().SetRootNode(rootNode)
+	engine.GetGameContext().GetNodeTree().SetRootNode(rootNode)
 }

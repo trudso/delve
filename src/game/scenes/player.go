@@ -2,17 +2,17 @@ package scenes
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/trudso/delve/game/nodes"
+	"github.com/trudso/delve/engine"
 )
 
 const PLAYER_NODE = "Player"
 
 type Player struct {
 	// nodes
-	nodes.BaseNode
-	bodySprite      *nodes.Sprite
-	leftHandSprite  *nodes.Sprite
-	rightHandSprite *nodes.Sprite
+	engine.BaseNode
+	bodySprite      *engine.Sprite
+	leftHandSprite  *engine.Sprite
+	rightHandSprite *engine.Sprite
 
 	// attributes
 	Speed float32
@@ -43,14 +43,14 @@ func (p Player) GetDataSet(onlyChangedFields bool) map[string]any {
 
 
 func NewPlayer() Player {
-	bodySprite := nodes.NewSprite("body", "res/players/green_character.png")
-	leftHandSprite := nodes.NewSprite("left_hand", "res/players/green_hand.png")
-	rightHandSprite := nodes.NewSprite("right_hand", "res/players/green_hand.png")
+	bodySprite := engine.NewSprite("body", "res/players/green_character.png")
+	leftHandSprite := engine.NewSprite("left_hand", "res/players/green_hand.png")
+	rightHandSprite := engine.NewSprite("right_hand", "res/players/green_hand.png")
 	leftHandSprite.Transform.Position.X += 30
 	rightHandSprite.Transform.Position.X -= 30
 
 	player := Player{
-		BaseNode:        nodes.NewBaseNode(PLAYER_NODE, "player1"),
+		BaseNode:        engine.NewBaseNode(PLAYER_NODE, "player1"),
 		bodySprite:      &bodySprite,
 		leftHandSprite:  &leftHandSprite,
 		rightHandSprite: &rightHandSprite,
@@ -65,7 +65,7 @@ func NewPlayer() Player {
 	return player
 }
 
-func NewPlayerFromDataSet( data map[string]any) nodes.Node {
+func NewPlayerFromDataSet( data map[string]any) engine.Node {
 	player := NewPlayer()
 	player.ApplyDataSet(data)
 	return &player

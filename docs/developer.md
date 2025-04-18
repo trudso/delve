@@ -33,6 +33,12 @@ The node will need a root node reference for which it will traverse the scene tr
 Any scene tree that incoorporates networking needs to have a networking node. This node will synchronize the scene tree with the server (authority).
 
 TODO:
+
+* Meta data associated with each field
+    * Authority
+    * Replicated ( for networking )
+    * Modified
+
 * some indicator of who is the authority for a given field
     * is there some sort of trait/annotation functionality in golang ?
 * determine serialization format: protobuf, ...
