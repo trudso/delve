@@ -10,6 +10,7 @@ type NodeCreator interface {
 
 type NodeTree interface {
 	GetNode(path string) Node
+	GetRootNode() Node
 	SetRootNode(node Node)
 }
 
@@ -72,6 +73,10 @@ type BaseNodeTree struct {
 	rootNode Node
 }
 
+func (t BaseNodeTree) GetRootNode() Node {
+	return t.rootNode
+}
+
 func (t BaseNodeTree) GetNode(path string) Node {
 	elements := strings.FieldsFunc(path, func(r rune) bool { return r == '/' })
 
@@ -87,12 +92,9 @@ func (t BaseNodeTree) GetNode(path string) Node {
 }
 
 func (t *BaseNodeTree) SetRootNode(node Node) {
-	if t.rootNode != nil {
-		panic("Root node already set")
-	}
-
 	t.rootNode = node
 }
+
 
 func NewBaseNodeTree() BaseNodeTree {
 	return BaseNodeTree{}

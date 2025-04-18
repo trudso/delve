@@ -29,19 +29,34 @@ func (s *Snapshot) Init() {
 }
 
 func (s *Snapshot) Input() {
-	if rl.IsKeyDown(rl.KeyLeftShift) {
+	if rl.IsKeyDown(rl.KeyLeftShift) && rl.IsKeyDown(rl.KeyLeftControl) {
+		// save
 		if rl.IsKeyReleased(rl.KeyOne) {
 			s.SaveSnapshot("snapshot1.data")
+		}
+		if rl.IsKeyReleased(rl.KeyTwo) {
+			s.SaveSnapshot("snapshot1.data")
+		}
+	}
+
+	if rl.IsKeyDown( rl.KeyLeftShift ) && !rl.IsKeyDown( rl.KeyLeftControl ) {
+		// load
+		if rl.IsKeyReleased(rl.KeyOne) {
+			s.LoadSnapshot("snapshot1.data")
+		}
+		if rl.IsKeyReleased(rl.KeyTwo) {
+			s.LoadSnapshot("snapshot1.data")
 		}
 	}
 }
 
 func (s Snapshot) SaveSnapshot(name string) {
 	mapData := nodes.NodeToDataSet(s.RootNode, false)
-	comm.SaveAsJson(s.rootDirectory, name, mapData)
+	comm.SaveJson(s.rootDirectory, name, mapData)
 }
 
-func LoadSnapshot(name string) nodes.Node {
-	rl.TraceLog(rl.LogDebug, "loading snapshot %s", name)
-	return nil
+func (s Snapshot) LoadSnapshot(name string) {
+	mapData := comm.LoadJson(s.rootDirectory, name)
+	node := nodes.DataSetToNode(mapData)
+	nodes.GetGameContext().GetNodeTree().SetRootNode(node)
 }

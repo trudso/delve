@@ -20,27 +20,27 @@ func NewTransform() Transform {
 
 func (t *Transform) ApplyDataSet(data map[string]any) {
 	if d, found := data["position.x"]; found {
-		t.Position.X = d.(float32)
+		t.Position.X = getFloat32(d)
 	}
 
 	if d, found := data["position.y"]; found {
-		t.Position.Y = d.(float32)
+		t.Position.Y = getFloat32(d)
 	}
 
 	if d, found := data["scale.x"]; found {
-		t.Scale.X = d.(float32)
+		t.Scale.X = getFloat32(d)
 	}
 
 	if d, found := data["scale.y"]; found {
-		t.Scale.Y = d.(float32)
+		t.Scale.Y = getFloat32(d)
 	}
 
 	if d, found := data["rotation.x"]; found {
-		t.Rotation.X = d.(float32)
+		t.Rotation.X = getFloat32(d)
 	}
 
 	if d, found := data["rotation.y"]; found {
-		t.Rotation.Y = d.(float32)
+		t.Rotation.Y = getFloat32(d)
 	}
 }
 
@@ -54,4 +54,18 @@ func TransformToDataSet(transform Transform, changedFieldsOnly bool) map[string]
 		"rotation.y": transform.Rotation.Y,
 	}
 	return res
+}
+
+func getFloat32( number any ) float32 {
+	n32, ok := number.(float32)
+	if ok {
+		return n32
+	}
+	
+	n64, ok := number.(float64)
+	if ok {
+		return float32(n64)
+	}
+
+	panic("Expected float32 or float64")
 }

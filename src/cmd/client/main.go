@@ -6,6 +6,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/trudso/delve/game/levels"
 	"github.com/trudso/delve/game/nodes"
+	"github.com/trudso/delve/game/scenes"
 )
 
 func main() {
@@ -31,7 +32,7 @@ func main() {
 		rl.ClearBackground(rl.RayWhite)
 		rl.DrawText(fmt.Sprintf("player pos: %+v", level.Player.Transform.Position), 100, 20, 20, rl.LightGray)
 
-		nodes.Update(&level, rl.GetFrameTime())
+		nodes.Update(nodes.GetGameContext().GetNodeTree().GetRootNode(), rl.GetFrameTime())
 
 		rl.EndDrawing()
 	}
@@ -39,6 +40,9 @@ func main() {
 
 func createGameContext(rootNode nodes.Node) {
 	nodeCreator := nodes.NewBaseNodeCreator()
+	nodeCreator.Register(scenes.PLAYER_NODE, scenes.NewPlayerFromDataSet)
+	nodeCreator.Register(levels.TESTLEVEL_NODE, levels.NewTestLevelFromDataSet)
+
 	//TODO[mt]: Add node instantiators for levels and scenes
 
 	nodeTree := nodes.NewBaseNodeTree()

@@ -190,6 +190,10 @@ func NodeToDataSet(n Node, onlyChangedFields bool) map[string]any {
 	return n.GetDataSet(onlyChangedFields)
 }
 
+func DataSetToNode(data map[string]any) Node {
+	return CreateNodeFromDataSet(data)
+}
+
 func ApplyDataSet(n Node, data map[string]any) Node {
 	n.ApplyDataSet(data)
 	return n

@@ -5,7 +5,7 @@ import (
 	"github.com/trudso/delve/game/nodes"
 )
 
-const PLAYER_NODE = "player"
+const PLAYER_NODE = "Player"
 
 type Player struct {
 	// nodes
@@ -63,4 +63,10 @@ func NewPlayer() Player {
 	player.AddChild(player.rightHandSprite)
 
 	return player
+}
+
+func NewPlayerFromDataSet( data map[string]any) nodes.Node {
+	player := NewPlayer()
+	player.ApplyDataSet(data)
+	return &player
 }

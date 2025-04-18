@@ -1,7 +1,6 @@
 package levels
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/trudso/delve/game/nodes"
 	"github.com/trudso/delve/game/scenes"
 )
@@ -31,4 +30,10 @@ func NewTestLevel() TestLevel {
 	level.AddChild(level.Snapshot)
 
 	return level
+}
+
+func NewTestLevelFromDataSet( data map[string]any) nodes.Node {
+	level := NewTestLevel()
+	level.ApplyDataSet(data)
+	return &level
 }

@@ -44,5 +44,7 @@ func NewSpriteFromDataSet(data map[string]any) Node {
 	}
 
 	sprite := NewSprite(id.(string), source.(string))
+	sprite.ApplyDataSet(data)
+
 	return &sprite
 }
