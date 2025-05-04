@@ -18,7 +18,8 @@ func NewTransform() Transform {
 	}
 }
 
-func (t *Transform) ApplyDataSet(data map[string]any) {
+// immutable
+func (t Transform) ApplyDataSet(data map[string]any) Transform {
 	if d, found := data["position.x"]; found {
 		t.Position.X = getFloat32(d)
 	}
@@ -42,16 +43,18 @@ func (t *Transform) ApplyDataSet(data map[string]any) {
 	if d, found := data["rotation.y"]; found {
 		t.Rotation.Y = getFloat32(d)
 	}
+
+	return t
 }
 
-func TransformToDataSet(transform Transform, changedFieldsOnly bool) map[string]any {
+func (t Transform) GetDataSet(onlyChangedFields bool) map[string]any {
 	res := map[string]any{
-		"position.x": transform.Position.X,
-		"position.y": transform.Position.Y,
-		"scale.x":    transform.Scale.X,
-		"scale.y":    transform.Scale.Y,
-		"rotation.x": transform.Rotation.X,
-		"rotation.y": transform.Rotation.Y,
+		"position.x": t.Position.X,
+		"position.y": t.Position.Y,
+		"scale.x":    t.Scale.X,
+		"scale.y":    t.Scale.Y,
+		"rotation.x": t.Rotation.X,
+		"rotation.y": t.Rotation.Y,
 	}
 	return res
 }

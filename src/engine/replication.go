@@ -13,6 +13,7 @@ type Replicatable[T comparable] struct {
 	IsAuthority AuthorityFunc
 }
 
+// SetFromAuthority will only set the value if the value is from the authority
 func (r *Replicatable[T]) SetFromAuthority(value T) {
 	if r.IsAuthority() {
 		return
@@ -28,8 +29,8 @@ func (r *Replicatable[T]) Set(value T) {
 	r.value = value
 } 
 
-func (r Replicatable[T]) Get() T {
-	return r.value
+func (r *Replicatable[T]) Get() *T {
+	return &r.value
 }
 
 func (r Replicatable[T]) IsChanged() bool {
@@ -38,4 +39,13 @@ func (r Replicatable[T]) IsChanged() bool {
 
 func (r Replicatable[T]) ShouldReplicate() bool {
 	return r.shouldReplicate
+}
+
+func NewReplicatable[T comparable](value T, shouldReplicate bool, isAuthority AuthorityFunc) Replicatable[T] {
+	return Replicatable[T]{
+		originalValue: value,
+		value: value,
+		shouldReplicate: shouldReplicate,
+		IsAuthority: isAuthority,
+	}
 }

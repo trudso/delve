@@ -35,7 +35,7 @@ type Node interface {
 	ApplyDataSet(map[string]any)
 }
 
-// Base node implementation
+// --------------- Base node implementation ---------------
 type BaseNode struct {
 	Id        string
 	nodeType  string
@@ -109,7 +109,7 @@ func (n BaseNode) GetDataSet(onlyChangedFields bool) map[string]any {
 	res := map[string]any{
 		"id":        n.Id,
 		"type":      n.nodeType,
-		"transform": TransformToDataSet(n.Transform, onlyChangedFields),
+		"transform": n.Transform.GetDataSet(onlyChangedFields),
 		"children":  children,
 	}
 
@@ -177,7 +177,7 @@ func Update(n Node, deltaTime float32) {
 	rl.PopMatrix()
 }
 
-// Node functions
+// --------------- Node functions ---------------
 func InitNode(n Node) {
 	n.Init()
 }

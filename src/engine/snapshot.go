@@ -33,7 +33,7 @@ func (s *Snapshot) Input() {
 			s.SaveSnapshot("snapshot1.data")
 		}
 		if rl.IsKeyReleased(rl.KeyTwo) {
-			s.SaveSnapshot("snapshot1.data")
+			s.SaveSnapshot("snapshot2.data")
 		}
 	}
 
@@ -43,7 +43,7 @@ func (s *Snapshot) Input() {
 			s.LoadSnapshot("snapshot1.data")
 		}
 		if rl.IsKeyReleased(rl.KeyTwo) {
-			s.LoadSnapshot("snapshot1.data")
+			s.LoadSnapshot("snapshot2.data")
 		}
 	}
 }
