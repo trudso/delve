@@ -99,7 +99,7 @@ func (n BaseNode) Delete() {
 	}
 }
 
-// Serialization for snapshots and networking
+// TODO[mt]: rework to use replication instead
 func (n BaseNode) GetDataSet(onlyChangedFields bool) map[string]any {
 	children := make(map[string]any)
 	for _, child := range n.Children {
@@ -116,6 +116,7 @@ func (n BaseNode) GetDataSet(onlyChangedFields bool) map[string]any {
 	return res
 }
 
+// TODO[mt]: rework to use replication instead
 func (n *BaseNode) ApplyDataSet(data map[string]any) {
 	if data["id"] != nil {
 		n.Id = data["id"].(string)
