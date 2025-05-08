@@ -55,4 +55,13 @@ func TestTransformCollectionReplication(t *testing.T) {
 	ResetToChanged(replication)
 	ds = BuildChangeSet(replication)
 	assert.Equal(t, 0, len(ds))
+
+	// fetch snapshot
+	ds = BuildSnapshot(replication)
+	assert.Equal(t, 1, len(ds))
+	posData = ds["transform"].(map[string]any);
+	assert.Equal(t, 2, len(posData))
+	assert.Equal(t, float32(69), posData["position.x"])
+	assert.Equal(t, float32(420), posData["position.y"])
+
 }

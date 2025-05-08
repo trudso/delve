@@ -8,6 +8,7 @@ type Transform struct {
 	Position rl.Vector2
 	Scale    rl.Vector2
 	Rotation rl.Vector2
+	replication *ReplicationCollection
 }
 
 func NewTransform() Transform {
@@ -19,44 +20,58 @@ func NewTransform() Transform {
 }
 
 // immutable
-func (t Transform) ApplyDataSet(data map[string]any) Transform {
-	if d, found := data["position.x"]; found {
-		t.Position.X = getFloat32(d)
-	}
+//func (t Transform) ApplyDataSet(data map[string]any) Transform {
+//	if d, found := data["position.x"]; found {
+//		t.Position.X = getFloat32(d)
+//	}
+//
+//	if d, found := data["position.y"]; found {
+//		t.Position.Y = getFloat32(d)
+//	}
+//
+//	if d, found := data["scale.x"]; found {
+//		t.Scale.X = getFloat32(d)
+//	}
+//
+//	if d, found := data["scale.y"]; found {
+//		t.Scale.Y = getFloat32(d)
+//	}
+//
+//	if d, found := data["rotation.x"]; found {
+//		t.Rotation.X = getFloat32(d)
+//	}
+//
+//	if d, found := data["rotation.y"]; found {
+//		t.Rotation.Y = getFloat32(d)
+//	}
+//
+//	return t
+//}
 
-	if d, found := data["position.y"]; found {
-		t.Position.Y = getFloat32(d)
-	}
+//func (t Transform) GetDataSet(fullSnapshot bool) map[string]any {
+//	res := map[string]any{
+//		"position.x": t.Position.X,
+//		"position.y": t.Position.Y,
+//		"scale.x":    t.Scale.X,
+//		"scale.y":    t.Scale.Y,
+//		"rotation.x": t.Rotation.X,
+//		"rotation.y": t.Rotation.Y,
+//	}
+//	return res
+//}
 
-	if d, found := data["scale.x"]; found {
-		t.Scale.X = getFloat32(d)
+func (t *Transform) GetReplication() *ReplicationCollection {
+	if t.replication == nil {
+		t.replication = NewReplicationCollection( "transform", []Replicatable {
+			NewReplicationPrimitive( "position.x", &t.Position.X, true, nil),
+			NewReplicationPrimitive( "position.y", &t.Position.Y, true, nil),
+			NewReplicationPrimitive( "scale.x", &t.Scale.X, true, nil),
+			NewReplicationPrimitive( "scale.y", &t.Scale.Y, true, nil),
+			NewReplicationPrimitive( "rotation.x", &t.Rotation.X, true, nil),
+			NewReplicationPrimitive( "rotation.y", &t.Rotation.Y, true, nil),
+		})
 	}
-
-	if d, found := data["scale.y"]; found {
-		t.Scale.Y = getFloat32(d)
-	}
-
-	if d, found := data["rotation.x"]; found {
-		t.Rotation.X = getFloat32(d)
-	}
-
-	if d, found := data["rotation.y"]; found {
-		t.Rotation.Y = getFloat32(d)
-	}
-
-	return t
-}
-
-func (t Transform) GetDataSet(onlyChangedFields bool) map[string]any {
-	res := map[string]any{
-		"position.x": t.Position.X,
-		"position.y": t.Position.Y,
-		"scale.x":    t.Scale.X,
-		"scale.y":    t.Scale.Y,
-		"rotation.x": t.Rotation.X,
-		"rotation.y": t.Rotation.Y,
-	}
-	return res
+	return t.replication
 }
 
 func getFloat32( number any ) float32 {

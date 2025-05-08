@@ -31,8 +31,10 @@ type Node interface {
 	Delete()
 
 	// Serialization functions
-	GetDataSet(onlyChangedFields bool) map[string]any
-	ApplyDataSet(map[string]any)
+	// GetDataSet(onlyChangedFields bool) map[string]any
+	// ApplyDataSet(map[string]any)
+
+	GetReplication() *ReplicationCollection
 }
 
 // --------------- Base node implementation ---------------
@@ -42,6 +44,8 @@ type BaseNode struct {
 	Parent    Node
 	Children  []Node
 	Transform Transform
+
+	replication *ReplicationCollection
 }
 
 // Tree functions
@@ -99,48 +103,66 @@ func (n BaseNode) Delete() {
 	}
 }
 
-// TODO[mt]: rework to use replication instead
-func (n BaseNode) GetDataSet(onlyChangedFields bool) map[string]any {
-	children := make(map[string]any)
-	for _, child := range n.Children {
-		children[child.GetId()] = NodeToDataSet(child, onlyChangedFields)
-	}
-
-	res := map[string]any{
-		"id":        n.Id,
-		"type":      n.nodeType,
-		"transform": n.Transform.GetDataSet(onlyChangedFields),
-		"children":  children,
-	}
-
-	return res
-}
-
-// TODO[mt]: rework to use replication instead
-func (n *BaseNode) ApplyDataSet(data map[string]any) {
-	if data["id"] != nil {
-		n.Id = data["id"].(string)
-	}
-
-	if d, found := data["transform"]; found {
-		n.Transform.ApplyDataSet(d.(map[string]any))
-	}
-
-	if d, found := data["children"]; found {
-		children := d.(map[string]any)
-		for key, childData := range children {
-			// TODO[mt]: add support for deletion and for node tree mutation
-			// modify existing child
-			existingChild := n.GetChild(key)
-			if existingChild != nil {
-				existingChild.ApplyDataSet(childData.(map[string]any))
-			} else {
-				newChild := CreateNodeFromDataSet(childData.(map[string]any))
-				n.AddChild(newChild)
-			}
+func (n *BaseNode) GetReplication() *ReplicationCollection {
+	if n.replication == nil {
+		children := NewReplicationCollection( "children", []Replicatable {})
+		for _, child := range n.Children {
+			children.AddElement(child.GetReplication())
 		}
-	}
-}
+
+		n.replication = NewReplicationCollection( "node", []Replicatable {
+			NewReplicationPrimitive( "id", &n.Id, true, nil),	
+			NewReplicationPrimitive( "type", &n.nodeType, true, nil),
+			n.Transform.GetReplication(),
+			children,	
+		})
+ 	}
+
+	return n.replication
+}  
+
+// TODO[mt]: rework to use replication instead
+//func (n BaseNode) GetDataSet(onlyChangedFields bool) map[string]any {
+//	children := make(map[string]any)
+//	for _, child := range n.Children {
+//		children[child.GetId()] = NodeToDataSet(child, onlyChangedFields)
+//	}
+//
+//	res := map[string]any{
+//		"id":        n.Id,
+//		"type":      n.nodeType,
+//		"transform": n.Transform.GetDataSet(onlyChangedFields),
+//		"children":  children,
+//	}
+//
+//	return res
+//}
+
+// TODO[mt]: rework to use replication instead
+//func (n *BaseNode) ApplyDataSet(data map[string]any) {
+//	if data["id"] != nil {
+//		n.Id = data["id"].(string)
+//	}
+//
+//	if d, found := data["transform"]; found {
+//		n.Transform.ApplyDataSet(d.(map[string]any))
+//	}
+//
+//	if d, found := data["children"]; found {
+//		children := d.(map[string]any)
+//		for key, childData := range children {
+//			// TODO[mt]: add support for deletion and for node tree mutation
+//			// modify existing child
+//			existingChild := n.GetChild(key)
+//			if existingChild != nil {
+//				existingChild.ApplyDataSet(childData.(map[string]any))
+//			} else {
+//				newChild := CreateNodeFromDataSet(childData.(map[string]any))
+//				n.AddChild(newChild)
+//			}
+//		}
+//	}
+//}
 
 // constructors
 func NewBaseNode(nodeType string, id string) BaseNode {
@@ -187,19 +209,20 @@ func DeleteNode(n Node) {
 	n.Delete()
 }
 
-func NodeToDataSet(n Node, onlyChangedFields bool) map[string]any {
-	return n.GetDataSet(onlyChangedFields)
-}
+//func NodeToDataSet(n Node, onlyChangedFields bool) map[string]any {
+//	return n.GetDataSet(onlyChangedFields)
+//}
+//
+//func DataSetToNode(data map[string]any) Node {
+//	return CreateNodeFromDataSet(data)
+//}
+//
+//func ApplyDataSet(n Node, data map[string]any) Node {
+//	n.ApplyDataSet(data)
+//	return n
+//}
+//
+//func CreateNodeFromDataSet(data map[string]any) Node {
+//	return GetGameContext().GetNodeCreator().CreateNode(data["type"].(string), data)
+//}
 
-func DataSetToNode(data map[string]any) Node {
-	return CreateNodeFromDataSet(data)
-}
-
-func ApplyDataSet(n Node, data map[string]any) Node {
-	n.ApplyDataSet(data)
-	return n
-}
-
-func CreateNodeFromDataSet(data map[string]any) Node {
-	return GetGameContext().GetNodeCreator().CreateNode(data["type"].(string), data)
-}

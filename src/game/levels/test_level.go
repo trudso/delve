@@ -32,8 +32,8 @@ func NewTestLevel() TestLevel {
 	return level
 }
 
-func NewTestLevelFromDataSet( data map[string]any) engine.Node {
-	level := NewTestLevel()
-	level.ApplyDataSet(data)
-	return &level
-}
+//func NewTestLevelFromDataSet( data map[string]any) engine.Node {
+//	level := NewTestLevel()
+//	level.ApplyDataSet(data)
+//	return &level
+//}

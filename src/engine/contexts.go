@@ -63,7 +63,7 @@ func (c *BaseNodeCreator) Register(typeName string, instantiator NodeInstantiato
 func NewBaseNodeCreator() BaseNodeCreator {
 	return BaseNodeCreator{
 		nodeInstantiators: map[string]NodeInstantiator{
-			SPRITE_NODE: NewSpriteFromDataSet,
+			//SPRITE_NODE: NewSpriteFromDataSet,
 		},
 	}
 }

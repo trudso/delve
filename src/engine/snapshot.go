@@ -49,12 +49,12 @@ func (s *Snapshot) Input() {
 }
 
 func (s Snapshot) SaveSnapshot(name string) {
-	mapData := NodeToDataSet(s.RootNode, false)
-	SaveJson(s.rootDirectory, name, mapData)
+	//mapData := NodeToDataSet(s.RootNode, false)
+	//SaveJson(s.rootDirectory, name, mapData)
 }
 
 func (s Snapshot) LoadSnapshot(name string) {
-	mapData := LoadJson(s.rootDirectory, name)
-	node := DataSetToNode(mapData)
-	GetGameContext().GetNodeTree().SetRootNode(node)
+	//mapData := LoadJson(s.rootDirectory, name)
+	//node := DataSetToNode(mapData)
+	//GetGameContext().GetNodeTree().SetRootNode(node)
 }

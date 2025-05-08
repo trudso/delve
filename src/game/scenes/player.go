@@ -35,12 +35,11 @@ func (p *Player) Move(deltaTime float32) {
 	p.Transform.Rotation.X += 20 * deltaTime
 }
 
-func (p Player) GetDataSet(onlyChangedFields bool) map[string]any {
-	result := p.BaseNode.GetDataSet(onlyChangedFields)
-	result["speed"] = p.Speed
-	return result
-}
-
+//func (p Player) GetDataSet(onlyChangedFields bool) map[string]any {
+//	result := p.BaseNode.GetDataSet(onlyChangedFields)
+//	result["speed"] = p.Speed
+//	return result
+//}
 
 func NewPlayer() Player {
 	bodySprite := engine.NewSprite("body", "res/players/green_character.png")
@@ -65,8 +64,8 @@ func NewPlayer() Player {
 	return player
 }
 
-func NewPlayerFromDataSet( data map[string]any) engine.Node {
-	player := NewPlayer()
-	player.ApplyDataSet(data)
-	return &player
-}
+//func NewPlayerFromDataSet( data map[string]any) engine.Node {
+//	player := NewPlayer()
+//	player.ApplyDataSet(data)
+//	return &player
+//}

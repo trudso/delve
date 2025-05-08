@@ -32,19 +32,19 @@ func NewSprite(id string, source string) Sprite {
 	return sprite
 }
 
-func NewSpriteFromDataSet(data map[string]any) Node {
-	id, found := data["id"]
-	if !found {
-		panic( "No id specified for sprite")
-	}
-
-	source, found := data["source"]
-	if !found {
-		panic( "No source specified for sprite")
-	}
-
-	sprite := NewSprite(id.(string), source.(string))
-	sprite.ApplyDataSet(data)
-
-	return &sprite
-}
+//func NewSpriteFromDataSet(data map[string]any) Node {
+//	id, found := data["id"]
+//	if !found {
+//		panic( "No id specified for sprite")
+//	}
+//
+//	source, found := data["source"]
+//	if !found {
+//		panic( "No source specified for sprite")
+//	}
+//
+//	sprite := NewSprite(id.(string), source.(string))
+//	sprite.ApplyDataSet(data)
+//
+//	return &sprite
+//}

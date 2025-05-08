@@ -32,8 +32,8 @@ func (r ReplicationPrimitive[T]) ShouldReplicate() bool {
 	return r.shouldReplicate
 }
 
-func (r ReplicationPrimitive[T]) BuildChangeSet() map[string]any {
-	if !r.IsChanged() || !r.ShouldReplicate() {
+func (r ReplicationPrimitive[T]) BuildDataSet(fullSnapshot bool) map[string]any {
+	if !fullSnapshot && (!r.IsChanged() || !r.ShouldReplicate()) {
 		return nil
 	}
 	return map[string]any{r.id: *r.value}	
@@ -57,20 +57,13 @@ func NewReplicationPrimitive[T comparable](id string, value *T, shouldReplicate 
 type Replicatable interface {
 	ResetToChanged()
 	IsChanged() bool
-	BuildChangeSet() map[string]any
+	BuildDataSet(fullSnapshot bool) map[string]any
 }
 
 type ReplicationCollection struct {
 	id string
 	elements []Replicatable
 }	
-
-func NewReplicationCollection(id string, elements []Replicatable) *ReplicationCollection {
-	return &ReplicationCollection{
-		id: id,
-		elements: elements,
-	}
-}
 
 func (r ReplicationCollection) IsChanged() bool {
 	for _, element := range r.elements {
@@ -87,13 +80,13 @@ func (r *ReplicationCollection) ResetToChanged() {
 	}
 }
 
-func (r ReplicationCollection) BuildChangeSet() map[string]any {
-	if !r.IsChanged() {
+func (r ReplicationCollection) BuildDataSet(fullSnapshot bool) map[string]any {
+	if !fullSnapshot && !r.IsChanged() {
 		return nil
 	}
 	data := map[string]any{}
 	for _, element := range r.elements {
-		var ds = BuildChangeSet( element )
+		var ds = buildDataSet( element, fullSnapshot )
 		for k, v := range ds {
 			data[k] = v	
 		}
@@ -102,8 +95,31 @@ func (r ReplicationCollection) BuildChangeSet() map[string]any {
 	return map[string]any{r.id: data}
 }
 
-func BuildChangeSet( replicatable Replicatable) map[string]any {
-	return replicatable.BuildChangeSet()
+func (r ReplicationCollection) AddCollection( other ReplicationCollection ) {
+	r.elements = append(r.elements, other.elements...)
+}
+
+func (r *ReplicationCollection) AddElement( element Replicatable ) {
+	r.elements = append(r.elements, element)
+}
+
+func NewReplicationCollection(id string, elements []Replicatable) *ReplicationCollection {
+	return &ReplicationCollection{
+		id: id,
+		elements: elements,
+	}
+}
+
+func buildDataSet( replicatable Replicatable, fullSnapshot bool) map[string]any {
+	return replicatable.BuildDataSet(fullSnapshot)
+}
+
+func BuildChangeSet( replicatable Replicatable ) map[string]any {
+	return replicatable.BuildDataSet(false)
+}
+
+func BuildSnapshot( replicatable Replicatable ) map[string]any {
+	return replicatable.BuildDataSet(true)
 }
 
 func ResetToChanged( replicatable Replicatable) {

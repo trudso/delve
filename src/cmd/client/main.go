@@ -6,7 +6,6 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/trudso/delve/game/levels"
 	"github.com/trudso/delve/engine"
-	"github.com/trudso/delve/game/scenes"
 )
 
 func main() {
@@ -40,8 +39,8 @@ func main() {
 
 func createGameContext(rootNode engine.Node) {
 	nodeCreator := engine.NewBaseNodeCreator()
-	nodeCreator.Register(scenes.PLAYER_NODE, scenes.NewPlayerFromDataSet)
-	nodeCreator.Register(levels.TESTLEVEL_NODE, levels.NewTestLevelFromDataSet)
+	//nodeCreator.Register(scenes.PLAYER_NODE, scenes.NewPlayerFromDataSet)
+	//nodeCreator.Register(levels.TESTLEVEL_NODE, levels.NewTestLevelFromDataSet)
 
 	//TODO[mt]: Add node instantiators for levels and scenes
 
