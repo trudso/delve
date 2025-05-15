@@ -74,7 +74,7 @@ func (r ReplicationCollection) IsChanged() bool {
 	return false
 }
 
-func (r *ReplicationCollection) ResetToChanged() {
+func (r ReplicationCollection) ResetToChanged() {
 	for _, element := range r.elements {
 		element.ResetToChanged()
 	}
@@ -103,8 +103,8 @@ func (r *ReplicationCollection) AddElement( element Replicatable ) {
 	r.elements = append(r.elements, element)
 }
 
-func NewReplicationCollection(id string, elements []Replicatable) *ReplicationCollection {
-	return &ReplicationCollection{
+func NewReplicationCollection(id string, elements []Replicatable) ReplicationCollection {
+	return ReplicationCollection{
 		id: id,
 		elements: elements,
 	}

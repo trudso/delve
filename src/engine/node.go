@@ -34,7 +34,7 @@ type Node interface {
 	// GetDataSet(onlyChangedFields bool) map[string]any
 	// ApplyDataSet(map[string]any)
 
-	GetReplication() *ReplicationCollection
+	GetReplication() ReplicationCollection
 }
 
 // --------------- Base node implementation ---------------
@@ -103,22 +103,20 @@ func (n BaseNode) Delete() {
 	}
 }
 
-func (n *BaseNode) GetReplication() *ReplicationCollection {
-	if n.replication == nil {
-		children := NewReplicationCollection( "children", []Replicatable {})
-		for _, child := range n.Children {
-			children.AddElement(child.GetReplication())
-		}
+func (n *BaseNode) GetReplication() ReplicationCollection {
+	children := NewReplicationCollection( "children", []Replicatable {})
+	for _, child := range n.Children {
+		children.AddElement(child.GetReplication())
+	}
 
-		n.replication = NewReplicationCollection( "node", []Replicatable {
-			NewReplicationPrimitive( "id", &n.Id, true, nil),	
-			NewReplicationPrimitive( "type", &n.nodeType, true, nil),
-			n.Transform.GetReplication(),
-			children,	
-		})
- 	}
+	replication := NewReplicationCollection( "node", []Replicatable {
+		NewReplicationPrimitive( "id", &n.Id, true, nil),	
+		NewReplicationPrimitive( "type", &n.nodeType, true, nil),
+		n.Transform.GetReplication(),
+		children,	
+	})
 
-	return n.replication
+	return replication
 }  
 
 // TODO[mt]: rework to use replication instead

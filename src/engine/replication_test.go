@@ -8,34 +8,45 @@ import (
 
 // ---------------- colllections ----------------- //
 func TestTransformPrimitiveReplication(t *testing.T) {
-	transform := NewTransform()	
+	transform := NewTransform()
 
 	serverAuthority := func() bool { return true }
-  replication := NewReplicationPrimitive( "position.x", &transform.Position.X, true, serverAuthority)
+	replication := NewReplicationPrimitive("position.x", &transform.Position.X, true, serverAuthority)
 
 	// add changes
-	transform.Position.X = 42 
+	transform.Position.X = 42
+	transform.Position.Y = 69
 	ds := BuildChangeSet(replication)
 
 	assert.Equal(t, 1, len(ds))
 	assert.Equal(t, float32(42), ds["position.x"])
+
+	replication.ResetToChanged()
+	ds = BuildChangeSet(replication)
+	assert.Empty(t, ds)
+
+	// build change set
+	transform.Position.X = 420
+	ds = BuildChangeSet(replication)
+	assert.Equal(t, 1, len(ds))
+	assert.Equal(t, float32(420), ds["position.x"])
 }
 
 func TestTransformCollectionReplication(t *testing.T) {
-	transform := NewTransform()	
+	transform := NewTransform()
 
 	serverAuthority := func() bool { return true }
-	replication := NewReplicationCollection( "transform", []Replicatable{
-		NewReplicationPrimitive( "position.x", &transform.Position.X, true, serverAuthority),
-		NewReplicationPrimitive( "position.y", &transform.Position.Y, true, serverAuthority),
+	replication := NewReplicationCollection("transform", []Replicatable{
+		NewReplicationPrimitive("position.x", &transform.Position.X, true, serverAuthority),
+		NewReplicationPrimitive("position.y", &transform.Position.Y, true, serverAuthority),
 	})
 
 	// add changes
-	transform.Position.X = 42 
+	transform.Position.X = 42
 	ds := BuildChangeSet(replication)
 
 	assert.Equal(t, 1, len(ds))
-	posData := ds["transform"].(map[string]any);
+	posData := ds["transform"].(map[string]any)
 	assert.Equal(t, 1, len(posData))
 	assert.Equal(t, float32(42), posData["position.x"])
 
@@ -46,7 +57,7 @@ func TestTransformCollectionReplication(t *testing.T) {
 	// build change set
 	ds = BuildChangeSet(replication)
 	assert.Equal(t, 1, len(ds))
-	posData = ds["transform"].(map[string]any);
+	posData = ds["transform"].(map[string]any)
 	assert.Equal(t, 2, len(posData))
 	assert.Equal(t, float32(69), posData["position.x"])
 	assert.Equal(t, float32(420), posData["position.y"])
@@ -59,7 +70,7 @@ func TestTransformCollectionReplication(t *testing.T) {
 	// fetch snapshot
 	ds = BuildSnapshot(replication)
 	assert.Equal(t, 1, len(ds))
-	posData = ds["transform"].(map[string]any);
+	posData = ds["transform"].(map[string]any)
 	assert.Equal(t, 2, len(posData))
 	assert.Equal(t, float32(69), posData["position.x"])
 	assert.Equal(t, float32(420), posData["position.y"])

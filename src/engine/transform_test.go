@@ -15,7 +15,9 @@ func TestTranformReplication(t *testing.T) {
 	transform.Rotation.X = 3
 	transform.Rotation.Y = 4
 
-	ds := BuildSnapshot(transform.GetReplication())
+	replication := transform.GetReplication()
+
+	ds := BuildSnapshot(replication)
 	assert.Equal(t, 1, len(ds))
 	dsT := ds["transform"].(map[string]any)
 	assert.Equal(t, 6, len(dsT))
@@ -27,15 +29,15 @@ func TestTranformReplication(t *testing.T) {
 	assert.Equal(t, float32(4), dsT["rotation.y"])
 
 	// test changesets
-	ResetToChanged(transform.GetReplication())
-	ds = BuildChangeSet(transform.GetReplication())
-	assert.Equal(t, 0, len(ds))
+	ResetToChanged(replication)
+	ds = BuildChangeSet(replication)
+	assert.Empty(t, ds) 
 
 	// test changing
 	transform.Position.X = 2 
 	transform.Position.Y = 29 
 
-	ds = BuildChangeSet(transform.GetReplication())
+	ds = BuildChangeSet(replication)
 	assert.Equal(t, 1, len(ds))
 	dsT = ds["transform"].(map[string]any)
 	assert.Equal(t, 2, len(dsT))
