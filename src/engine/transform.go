@@ -8,7 +8,6 @@ type Transform struct {
 	Position    rl.Vector2
 	Scale       rl.Vector2
 	Rotation    rl.Vector2
-	replication ReplicationCollection
 }
 
 func NewTransform() Transform {

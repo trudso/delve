@@ -44,8 +44,6 @@ type BaseNode struct {
 	Parent    Node
 	Children  []Node
 	Transform Transform
-
-	replication *ReplicationCollection
 }
 
 // Tree functions
