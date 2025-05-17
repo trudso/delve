@@ -44,3 +44,22 @@ func TestTranformReplication(t *testing.T) {
 	assert.Equal(t, float32(2), dsT["position.x"])
 	assert.Equal(t, float32(29), dsT["position.y"])
 }
+
+func TestApplyDataSet(t *testing.T) {
+	transform := NewTransform()
+	transform.Position.X = 1
+	transform.Position.Y = 2
+	transform.Scale.X = 3 
+	transform.Scale.Y = 4
+	transform.Rotation.X = 5
+	transform.Rotation.Y = 6
+
+	replication := transform.GetReplication()
+	ds := BuildSnapshot(replication)
+
+	newTransform := NewTransform()
+	newReplication := newTransform.GetReplication()
+
+	ApplyDataSet(newReplication, ds)
+	assert.Equal(t, transform, newTransform)
+}

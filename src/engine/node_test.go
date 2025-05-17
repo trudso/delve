@@ -35,4 +35,8 @@ func TestNodeReplication(t *testing.T) {
 	assert.Equal(t, "testNodeType2", dsNode["type"])
 	dsTransform := dsNode["transform"].(map[string]any)
 	assert.Equal(t, float32(69), dsTransform["position.x"])
+
+	replication.ResetToChanged()
+	ds = BuildChangeSet(replication)
+	assert.Empty(t, ds)
 }
