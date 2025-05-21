@@ -101,13 +101,16 @@ func (n BaseNode) Delete() {
 	}
 }
 
+// Important: Replication base values determined at creation the replication creation time
+//  for change-sets. This makes the replication creation point very important when
+//  building change-sets.
 func (n *BaseNode) GetReplication() ReplicationCollection {
 	children := NewReplicationCollection( "children", []Replicatable {})
 	for _, child := range n.Children {
 		children.AddElement(child.GetReplication())
 	}
 
-	replication := NewReplicationCollection( "node", []Replicatable {
+	replication := NewReplicationCollection( n.Id, []Replicatable {
 		NewReplicationPrimitive( "id", &n.Id, true, nil),	
 		NewReplicationPrimitive( "type", &n.nodeType, true, nil),
 		n.Transform.GetReplication(),

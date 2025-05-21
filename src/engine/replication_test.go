@@ -74,5 +74,4 @@ func TestTransformCollectionReplication(t *testing.T) {
 	assert.Equal(t, 2, len(posData))
 	assert.Equal(t, float32(69), posData["position.x"])
 	assert.Equal(t, float32(420), posData["position.y"])
-
 }

@@ -45,7 +45,7 @@ func TestTranformReplication(t *testing.T) {
 	assert.Equal(t, float32(29), dsT["position.y"])
 }
 
-func TestApplyDataSet(t *testing.T) {
+func TestTransformApplyDataSet(t *testing.T) {
 	transform := NewTransform()
 	transform.Position.X = 1
 	transform.Position.Y = 2

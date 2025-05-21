@@ -1,12 +1,19 @@
 package engine
 
+import (
+	"fmt"
+	"os"
+)
+
 // interfaces
 type AuthorityFunc func() bool
 
 type Replicatable interface {
 	ResetToChanged()
 	IsChanged() bool
-	BuildDataSet(fullSnapshot bool) map[string]any
+	//NewInstance() Replicatable
+	BuildChangeSet() map[string]any
+	BuildSnapshot() map[string]any
 	ApplyDataSet(dataSet map[string]any)
 }
 
@@ -40,17 +47,24 @@ func (r ReplicationPrimitive[T]) ShouldReplicate() bool {
 	return r.shouldReplicate
 }
 
-func (r ReplicationPrimitive[T]) BuildDataSet(fullSnapshot bool) map[string]any {
-	if !fullSnapshot && (!r.IsChanged() || !r.ShouldReplicate()) {
+func (r ReplicationPrimitive[T]) BuildChangeSet() map[string]any {
+	if !r.IsChanged() || !r.ShouldReplicate() {
 		return nil
 	}
+	return map[string]any{r.id: *r.value}
+}
+
+func (r ReplicationPrimitive[T]) BuildSnapshot() map[string]any {
 	return map[string]any{r.id: *r.value}
 }
 
 func (r ReplicationPrimitive[T]) ApplyDataSet(dataSet map[string]any) {
 	if d, found := dataSet[r.id]; found {
 		*r.value = d.(T)
+	} else {
+		fmt.Fprintln(os.Stderr, "No primitive data found for:", r.id)
 	}
+
 }
 
 func (r *ReplicationPrimitive[T]) ResetToChanged() {
@@ -88,13 +102,13 @@ func (r ReplicationCollection) ResetToChanged() {
 	}
 }
 
-func (r ReplicationCollection) BuildDataSet(fullSnapshot bool) map[string]any {
-	if !fullSnapshot && !r.IsChanged() {
+func (r ReplicationCollection) BuildChangeSet() map[string]any {
+	if !r.IsChanged() {
 		return nil
 	}
 	data := map[string]any{}
 	for _, element := range r.elements {
-		var ds = buildDataSet(element, fullSnapshot)
+		var ds = BuildChangeSet(element)
 		for k, v := range ds {
 			data[k] = v
 		}
@@ -103,12 +117,28 @@ func (r ReplicationCollection) BuildDataSet(fullSnapshot bool) map[string]any {
 	return map[string]any{r.id: data}
 }
 
+func (r ReplicationCollection) BuildSnapshot() map[string]any {
+	data := map[string]any{}
+	for _, element := range r.elements {
+		var ds = BuildSnapshot(element)
+		for k, v := range ds {
+			data[k] = v
+		}
+	}
+
+	return map[string]any{r.id: data}
+}
+
+// TODO[mt]: how to work sub collections ?
 func (r ReplicationCollection) ApplyDataSet(dataSet map[string]any) {
 	if value, found := dataSet[r.id]; found {
 		ds := value.(map[string]any)
-		for _, element := range r.elements {
+		for key, element := range r.elements {
+			fmt.Println("Applying", key, "to", element)
 			ApplyDataSet(element, ds)
 		}
+	} else {
+		fmt.Fprintln( os.Stderr, "No data found for:", r.id)	
 	}
 }
 
@@ -127,16 +157,12 @@ func NewReplicationCollection(id string, elements []Replicatable) ReplicationCol
 	}
 }
 
-func buildDataSet(replicatable Replicatable, fullSnapshot bool) map[string]any {
-	return replicatable.BuildDataSet(fullSnapshot)
-}
-
 func BuildChangeSet(replicatable Replicatable) map[string]any {
-	return replicatable.BuildDataSet(false)
+	return replicatable.BuildChangeSet()
 }
 
 func BuildSnapshot(replicatable Replicatable) map[string]any {
-	return replicatable.BuildDataSet(true)
+	return replicatable.BuildSnapshot()
 }
 
 func ResetToChanged(replicatable Replicatable) {
