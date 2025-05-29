@@ -1,11 +1,11 @@
 package scenes
 
 import (
+	"reflect"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/trudso/delve/engine"
 )
-
-const PLAYER_NODE = "Player"
 
 type Player struct {
 	// nodes
@@ -35,13 +35,7 @@ func (p *Player) Move(deltaTime float32) {
 	p.Transform.Rotation.X += 20 * deltaTime
 }
 
-//func (p Player) GetDataSet(onlyChangedFields bool) map[string]any {
-//	result := p.BaseNode.GetDataSet(onlyChangedFields)
-//	result["speed"] = p.Speed
-//	return result
-//}
-
-func NewPlayer() Player {
+func NewPlayer(id string) Player {
 	bodySprite := engine.NewSprite("body", "res/players/green_character.png")
 	leftHandSprite := engine.NewSprite("left_hand", "res/players/green_hand.png")
 	rightHandSprite := engine.NewSprite("right_hand", "res/players/green_hand.png")
@@ -49,7 +43,7 @@ func NewPlayer() Player {
 	rightHandSprite.Transform.Position.X -= 30
 
 	player := Player{
-		BaseNode:        engine.NewBaseNode(PLAYER_NODE, "player1"),
+		BaseNode:        engine.NewBaseNode(id, reflect.TypeOf(Player{}), newPlayerFromDataSet),
 		bodySprite:      &bodySprite,
 		leftHandSprite:  &leftHandSprite,
 		rightHandSprite: &rightHandSprite,
@@ -64,8 +58,7 @@ func NewPlayer() Player {
 	return player
 }
 
-//func NewPlayerFromDataSet( data map[string]any) engine.Node {
-//	player := NewPlayer()
-//	player.ApplyDataSet(data)
-//	return &player
-//}
+func newPlayerFromDataSet( id string, data map[string]any) engine.Node {
+	player := NewPlayer(id)
+	return &player
+}

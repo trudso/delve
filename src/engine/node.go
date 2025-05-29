@@ -1,7 +1,18 @@
 package engine
 
 import (
+	"fmt"
+	"os"
+	"reflect"
+	"strings"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
+)
+
+type NodeFactory func(id string, data map[string]any) Node
+
+var (
+	nodeFactories = map[string]NodeFactory{}
 )
 
 type Node interface {
@@ -29,10 +40,6 @@ type Node interface {
 	// Initialization and cleanup
 	Init()
 	Delete()
-
-	// Serialization functions
-	// GetDataSet(onlyChangedFields bool) map[string]any
-	// ApplyDataSet(map[string]any)
 
 	GetReplication() ReplicationCollection
 }
@@ -102,76 +109,58 @@ func (n BaseNode) Delete() {
 }
 
 // Important: Replication base values determined at creation the replication creation time
-//  for change-sets. This makes the replication creation point very important when
-//  building change-sets.
+//
+//	for change-sets. This makes the replication creation point very important when
+//	building change-sets.
 func (n *BaseNode) GetReplication() ReplicationCollection {
-	children := NewReplicationCollection( "children", []Replicatable {})
+	children := NewReplicationCollection("children", []Replicatable{}, nil, n.addNewChildFromDataSet)
 	for _, child := range n.Children {
 		children.AddElement(child.GetReplication())
 	}
 
-	replication := NewReplicationCollection( n.Id, []Replicatable {
-		NewReplicationPrimitive( "id", &n.Id, true, nil),	
-		NewReplicationPrimitive( "type", &n.nodeType, true, nil),
+	replication := NewReplicationCollection(n.Id, []Replicatable{
 		n.Transform.GetReplication(),
-		children,	
-	})
+		children,
+	}, map[string]string{
+		"id":   n.Id,
+		"type": n.nodeType,
+	}, n.addNewChildFromDataSet)
 
 	return replication
-}  
+}
 
-// TODO[mt]: rework to use replication instead
-//func (n BaseNode) GetDataSet(onlyChangedFields bool) map[string]any {
-//	children := make(map[string]any)
-//	for _, child := range n.Children {
-//		children[child.GetId()] = NodeToDataSet(child, onlyChangedFields)
-//	}
-//
-//	res := map[string]any{
-//		"id":        n.Id,
-//		"type":      n.nodeType,
-//		"transform": n.Transform.GetDataSet(onlyChangedFields),
-//		"children":  children,
-//	}
-//
-//	return res
-//}
+func (n *BaseNode) addNewChildFromDataSet(id string, data map[string]any) Replicatable {
+	typeName, found := data["type"]
+	if !found {
+		return nil
+	}
 
-// TODO[mt]: rework to use replication instead
-//func (n *BaseNode) ApplyDataSet(data map[string]any) {
-//	if data["id"] != nil {
-//		n.Id = data["id"].(string)
-//	}
-//
-//	if d, found := data["transform"]; found {
-//		n.Transform.ApplyDataSet(d.(map[string]any))
-//	}
-//
-//	if d, found := data["children"]; found {
-//		children := d.(map[string]any)
-//		for key, childData := range children {
-//			// TODO[mt]: add support for deletion and for node tree mutation
-//			// modify existing child
-//			existingChild := n.GetChild(key)
-//			if existingChild != nil {
-//				existingChild.ApplyDataSet(childData.(map[string]any))
-//			} else {
-//				newChild := CreateNodeFromDataSet(childData.(map[string]any))
-//				n.AddChild(newChild)
-//			}
-//		}
-//	}
-//}
+	factory, found := nodeFactories[typeName.(string)]
+	if !found {
+		fmt.Fprintln(os.Stderr, "No factory found for:", typeName)
+		return nil
+	}
+
+	node := factory(id, data)
+	n.AddChild(node)
+	return node.GetReplication()
+}
 
 // constructors
-func NewBaseNode(nodeType string, id string) BaseNode {
-	return BaseNode{
+func NewBaseNode(id string, nodeType reflect.Type, factory NodeFactory ) BaseNode {
+	node := BaseNode{
 		Id:        id,
-		nodeType:  nodeType,
+		nodeType:  strings.ReplaceAll(nodeType.String(), "*", ""), // remove any pointer annotations
 		Parent:    nil,
 		Children:  make([]Node, 0),
 		Transform: NewTransform(),
 	}
+
+	if _, found := nodeFactories[nodeType.String()]; !found && factory != nil {
+		nodeFactories[node.nodeType] = factory
+	}
+
+	return node
 }
 
 // Game loop functionality
@@ -207,21 +196,3 @@ func InitNode(n Node) {
 func DeleteNode(n Node) {
 	n.Delete()
 }
-
-//func NodeToDataSet(n Node, onlyChangedFields bool) map[string]any {
-//	return n.GetDataSet(onlyChangedFields)
-//}
-//
-//func DataSetToNode(data map[string]any) Node {
-//	return CreateNodeFromDataSet(data)
-//}
-//
-//func ApplyDataSet(n Node, data map[string]any) Node {
-//	n.ApplyDataSet(data)
-//	return n
-//}
-//
-//func CreateNodeFromDataSet(data map[string]any) Node {
-//	return GetGameContext().GetNodeCreator().CreateNode(data["type"].(string), data)
-//}
-

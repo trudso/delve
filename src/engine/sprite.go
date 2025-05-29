@@ -1,10 +1,10 @@
 package engine
 
 import (
+	"reflect"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
-
-const SPRITE_NODE = "Sprite"
 
 type Sprite struct {
 	BaseNode
@@ -23,7 +23,7 @@ func (s Sprite) Delete() {
 
 func NewSprite(id string, source string) Sprite {
 	sprite := Sprite{
-		BaseNode: NewBaseNode(SPRITE_NODE, id),
+		BaseNode: NewBaseNode(id, reflect.TypeOf(Sprite{}), newSpriteFromDataSet ),
 		Source:   source,
 		Texture:  rl.LoadTexture(source),
 	}
@@ -32,19 +32,8 @@ func NewSprite(id string, source string) Sprite {
 	return sprite
 }
 
-//func NewSpriteFromDataSet(data map[string]any) Node {
-//	id, found := data["id"]
-//	if !found {
-//		panic( "No id specified for sprite")
-//	}
-//
-//	source, found := data["source"]
-//	if !found {
-//		panic( "No source specified for sprite")
-//	}
-//
-//	sprite := NewSprite(id.(string), source.(string))
-//	sprite.ApplyDataSet(data)
-//
-//	return &sprite
-//}
+func newSpriteFromDataSet(id string, data map[string]any) Node {
+	source, _ := data["source"].(string)
+	result := NewSprite(id, source)
+	return &result
+}

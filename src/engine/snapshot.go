@@ -1,10 +1,10 @@
 package engine
 
 import (
+	"reflect"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
-
-const SNAPSHOT_NODE = "Snapshot"
 
 type Snapshot struct {
 	BaseNode
@@ -16,7 +16,7 @@ type Snapshot struct {
 
 func NewSnapshot(id string, rootNodeName string) Snapshot {
 	return Snapshot{
-		BaseNode:      NewBaseNode(SNAPSHOT_NODE, id),
+		BaseNode:      NewBaseNode(id, reflect.TypeOf(Snapshot{}), newSnapshotFromDataSet),
 		rootNodeName:  rootNodeName,
 		rootDirectory: "snapshots",
 	}
@@ -57,4 +57,10 @@ func (s Snapshot) LoadSnapshot(name string) {
 	//mapData := LoadJson(s.rootDirectory, name)
 	//node := DataSetToNode(mapData)
 	//GetGameContext().GetNodeTree().SetRootNode(node)
+}
+
+func newSnapshotFromDataSet(id string, data map[string]any) Node {
+	rootNodeName, _ := data["rootNodeName"].(string)
+	result := NewSnapshot(id, rootNodeName)
+	return &result;
 }

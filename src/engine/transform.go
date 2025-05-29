@@ -18,48 +18,7 @@ func NewTransform() Transform {
 	}
 }
 
-// immutable
-//func (t Transform) ApplyDataSet(data map[string]any) Transform {
-//	if d, found := data["position.x"]; found {
-//		t.Position.X = getFloat32(d)
-//	}
-//
-//	if d, found := data["position.y"]; found {
-//		t.Position.Y = getFloat32(d)
-//	}
-//
-//	if d, found := data["scale.x"]; found {
-//		t.Scale.X = getFloat32(d)
-//	}
-//
-//	if d, found := data["scale.y"]; found {
-//		t.Scale.Y = getFloat32(d)
-//	}
-//
-//	if d, found := data["rotation.x"]; found {
-//		t.Rotation.X = getFloat32(d)
-//	}
-//
-//	if d, found := data["rotation.y"]; found {
-//		t.Rotation.Y = getFloat32(d)
-//	}
-//
-//	return t
-//}
-
-//func (t Transform) GetDataSet(fullSnapshot bool) map[string]any {
-//	res := map[string]any{
-//		"position.x": t.Position.X,
-//		"position.y": t.Position.Y,
-//		"scale.x":    t.Scale.X,
-//		"scale.y":    t.Scale.Y,
-//		"rotation.x": t.Rotation.X,
-//		"rotation.y": t.Rotation.Y,
-//	}
-//	return res
-//}
-
-func (t *Transform) GetReplication() ReplicationCollection {
+func (t *Transform) GetReplication() *ReplicationCollection {
 	replication := NewReplicationCollection("transform", []Replicatable{
 		NewReplicationPrimitive("position.x", &t.Position.X, true, nil),
 		NewReplicationPrimitive("position.y", &t.Position.Y, true, nil),
@@ -67,9 +26,9 @@ func (t *Transform) GetReplication() ReplicationCollection {
 		NewReplicationPrimitive("scale.y", &t.Scale.Y, true, nil),
 		NewReplicationPrimitive("rotation.x", &t.Rotation.X, true, nil),
 		NewReplicationPrimitive("rotation.y", &t.Rotation.Y, true, nil),
-	})
+	}, nil, nil)
 
-	return replication
+	return &replication
 }
 
 func getFloat32(number any) float32 {

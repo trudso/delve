@@ -16,7 +16,7 @@ func main() {
 	rl.SetTargetFPS(100)
 
 	// create test level
-	level := levels.NewTestLevel()
+	level := levels.NewTestLevel("TestLevel1")
 	defer engine.DeleteNode(&level)
 
 	// create game context
@@ -39,11 +39,6 @@ func main() {
 
 func createGameContext(rootNode engine.Node) {
 	nodeCreator := engine.NewBaseNodeCreator()
-	//nodeCreator.Register(scenes.PLAYER_NODE, scenes.NewPlayerFromDataSet)
-	//nodeCreator.Register(levels.TESTLEVEL_NODE, levels.NewTestLevelFromDataSet)
-
-	//TODO[mt]: Add node instantiators for levels and scenes
-
 	nodeTree := engine.NewBaseNodeTree()
 	engine.NewGameContext(nodeCreator, &nodeTree)
 

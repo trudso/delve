@@ -1,11 +1,11 @@
 package levels
 
 import (
+	"reflect"
+
 	"github.com/trudso/delve/engine"
 	"github.com/trudso/delve/game/scenes"
 )
-
-const TESTLEVEL_NODE = "TestLevel"
 
 type TestLevel struct {
 	engine.BaseNode
@@ -13,12 +13,12 @@ type TestLevel struct {
 	Snapshot *engine.Snapshot
 }
 
-func NewTestLevel() TestLevel {
-	player := scenes.NewPlayer()
+func NewTestLevel(id string) TestLevel {
+	player := scenes.NewPlayer("player")
 	snapshot := engine.NewSnapshot("ss1", "/")
 
 	level := TestLevel{
-		BaseNode: engine.NewBaseNode(TESTLEVEL_NODE, "TestLevel1"),
+		BaseNode: engine.NewBaseNode(id, reflect.TypeOf(TestLevel{}), newTestLevelFromDataSet),
 		Player:   &player,
 		Snapshot: &snapshot,
 	}
@@ -32,8 +32,7 @@ func NewTestLevel() TestLevel {
 	return level
 }
 
-//func NewTestLevelFromDataSet( data map[string]any) engine.Node {
-//	level := NewTestLevel()
-//	level.ApplyDataSet(data)
-//	return &level
-//}
+func newTestLevelFromDataSet( id string, data map[string]any) engine.Node {
+	level := NewTestLevel(id)
+	return &level
+}
