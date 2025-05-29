@@ -5,10 +5,6 @@ import (
 	"os"
 )
 
-func AlwaysAuthority() bool {
-	return true
-}
-
 type ReplicationPrimitive[T comparable] struct {
 	id            string
 	originalValue T
@@ -67,10 +63,10 @@ func (r *ReplicationPrimitive[T]) ResetToChanged() {
 
 func NewReplicationPrimitive[T comparable](id string, value *T, shouldReplicate bool, isAuthority func() bool) *ReplicationPrimitive[T] {
 	return &ReplicationPrimitive[T]{
-		id:                      id,
-		originalValue:           *value,
-		value:                   value,
-		shouldReplicate:         shouldReplicate,
-		IsAuthority:             isAuthority,
+		id:              id,
+		originalValue:   *value,
+		value:           value,
+		shouldReplicate: shouldReplicate,
+		IsAuthority:     isAuthority,
 	}
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func baseNodeFactory( id string, data map[string]any ) Node {
+func baseNodeFactory(id string, _ map[string]any) Node {
 	node := NewBaseNode(id, reflect.TypeOf(BaseNode{}), baseNodeFactory)
 	return &node
 }
@@ -27,7 +27,7 @@ func TestNodeReplication(t *testing.T) {
 	assert.Equal(t, 1, len(dsTransform))
 	assert.Equal(t, float32(69), dsTransform["position.x"])
 
-	node.Transform.Position.Y = 420 
+	node.Transform.Position.Y = 420
 	ds = BuildChangeSet(replication)
 	assert.Equal(t, 1, len(ds))
 	dsNode = ds["testId"].(map[string]any)
@@ -79,6 +79,6 @@ func TestNodeWithChildrenApplySnapshot(t *testing.T) {
 
 	nc1 := newNode.GetChild("child1")
 	nc2 := newNode.GetChild("child2")
-	assert.Equal(t, 1, nc1.GetTransform().Position.Y )
-	assert.Equal(t, 2, nc2.GetTransform().Position.Y )
+	assert.Equal(t, float32(1), nc1.GetTransform().Position.X)
+	assert.Equal(t, float32(2), nc2.GetTransform().Position.X)
 }

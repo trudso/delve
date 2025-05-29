@@ -73,8 +73,8 @@ func (r ReplicationCollection) ApplyDataSet(dataSet map[string]any) {
 			replicatable, hasElement := r.getReplicatable(dsKey)
 			if !hasElement && r.factory != nil && !r.isFixedField(dsKey) {
 				replicatable = r.factory(dsKey, dsValue.(map[string]any))
+				ApplyDataSet(replicatable, map[string]any{dsKey: dsValue})
 				r.AddElement(replicatable) // issue as r is not a reference
-				ApplyDataSet(replicatable, dsValue.(map[string]any))
 				continue
 			}
 
@@ -85,7 +85,7 @@ func (r ReplicationCollection) ApplyDataSet(dataSet map[string]any) {
 				//fmt.Fprintln(os.Stderr, "No replicatable found for:", dsKey)
 			}
 		}
- 	}
+	}
 }
 
 func (r ReplicationCollection) getReplicatable(key string) (Replicatable, bool) {

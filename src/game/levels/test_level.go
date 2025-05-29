@@ -9,6 +9,7 @@ import (
 
 type TestLevel struct {
 	engine.BaseNode
+
 	Player   *scenes.Player
 	Snapshot *engine.Snapshot
 }
@@ -32,7 +33,7 @@ func NewTestLevel(id string) TestLevel {
 	return level
 }
 
-func newTestLevelFromDataSet( id string, data map[string]any) engine.Node {
-	level := NewTestLevel(id)
-	return &level
+func newTestLevelFromDataSet(id string, _ map[string]any) engine.Node {
+	node := NewTestLevel(id)
+	return &node
 }

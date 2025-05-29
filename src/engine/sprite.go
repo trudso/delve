@@ -23,7 +23,7 @@ func (s Sprite) Delete() {
 
 func NewSprite(id string, source string) Sprite {
 	sprite := Sprite{
-		BaseNode: NewBaseNode(id, reflect.TypeOf(Sprite{}), newSpriteFromDataSet ),
+		BaseNode: NewBaseNode(id, reflect.TypeOf(Sprite{}), newSpriteFromDataSet),
 		Source:   source,
 		Texture:  rl.LoadTexture(source),
 	}

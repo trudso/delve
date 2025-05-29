@@ -37,7 +37,7 @@ func (s *Snapshot) Input() {
 		}
 	}
 
-	if rl.IsKeyDown( rl.KeyLeftShift ) && !rl.IsKeyDown( rl.KeyLeftControl ) {
+	if rl.IsKeyDown(rl.KeyLeftShift) && !rl.IsKeyDown(rl.KeyLeftControl) {
 		// load
 		if rl.IsKeyReleased(rl.KeyOne) {
 			s.LoadSnapshot("snapshot1.data")
@@ -61,6 +61,6 @@ func (s Snapshot) LoadSnapshot(name string) {
 
 func newSnapshotFromDataSet(id string, data map[string]any) Node {
 	rootNodeName, _ := data["rootNodeName"].(string)
-	result := NewSnapshot(id, rootNodeName)
-	return &result;
+	node := NewSnapshot(id, rootNodeName)
+	return &node
 }

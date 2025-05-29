@@ -8,8 +8,8 @@ import (
 )
 
 type Player struct {
-	// nodes
 	engine.BaseNode
+
 	bodySprite      *engine.Sprite
 	leftHandSprite  *engine.Sprite
 	rightHandSprite *engine.Sprite
@@ -58,7 +58,7 @@ func NewPlayer(id string) Player {
 	return player
 }
 
-func newPlayerFromDataSet( id string, data map[string]any) engine.Node {
-	player := NewPlayer(id)
-	return &player
+func newPlayerFromDataSet(id string, _ map[string]any) engine.Node {
+	node := NewPlayer(id)
+	return &node
 }
