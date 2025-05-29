@@ -82,3 +82,21 @@ func TestNodeWithChildrenApplySnapshot(t *testing.T) {
 	assert.Equal(t, float32(1), nc1.GetTransform().Position.X)
 	assert.Equal(t, float32(2), nc2.GetTransform().Position.X)
 }
+
+func BenchmarkReplicationPerformance(b *testing.B) {
+	// initialization
+	node := NewBaseNode("testId", reflect.TypeOf(BaseNode{}), baseNodeFactory)
+	replication := node.GetReplication()
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		replication.ResetToChanged()
+
+		// move node to the right to enforce a change
+		node.Transform.Position.X += 1
+		ds := BuildChangeSet(replication)
+		if len(ds) == 0 {
+			b.Error("Empty replication")
+		}
+	}
+}

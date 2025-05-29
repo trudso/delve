@@ -32,7 +32,7 @@ func (p *Player) Move(deltaTime float32) {
 		p.Transform.Position.X += p.Speed * deltaTime
 	}
 
-	p.Transform.Rotation.X += 20 * deltaTime
+	//p.Transform.Rotation.X += 20 * deltaTime
 }
 
 func NewPlayer(id string) Player {
