@@ -4,10 +4,6 @@ import (
 	"strings"
 )
 
-type NodeCreator interface {
-	CreateNode(typeName string, data map[string]any) Node
-}
-
 type NodeTree interface {
 	GetNode(path string) Node
 	GetRootNode() Node
@@ -18,12 +14,7 @@ type NodeTree interface {
 var gameContext *GameContext = nil
 
 type GameContext struct {
-	nodeCreator NodeCreator
-	nodeTree    NodeTree
-}
-
-func (g GameContext) GetNodeCreator() NodeCreator {
-	return g.nodeCreator
+	nodeTree NodeTree
 }
 
 func (g GameContext) GetNodeTree() NodeTree {
@@ -34,37 +25,13 @@ func GetGameContext() GameContext {
 	return *gameContext
 }
 
-func NewGameContext(nodeCreator NodeCreator, nodeTree NodeTree) {
+func NewGameContext(nodeTree NodeTree) {
 	if gameContext != nil {
 		panic("Game context already initialized")
 	}
 
 	gameContext = &GameContext{
-		nodeCreator: nodeCreator,
-		nodeTree:    nodeTree,
-	}
-}
-
-// base node creator
-type NodeInstantiator func(data map[string]any) Node
-
-type BaseNodeCreator struct {
-	nodeInstantiators map[string]NodeInstantiator
-}
-
-func (c BaseNodeCreator) CreateNode(typeName string, data map[string]any) Node {
-	return c.nodeInstantiators[typeName](data)
-}
-
-func (c *BaseNodeCreator) Register(typeName string, instantiator NodeInstantiator) {
-	c.nodeInstantiators[typeName] = instantiator
-}
-
-func NewBaseNodeCreator() BaseNodeCreator {
-	return BaseNodeCreator{
-		nodeInstantiators: map[string]NodeInstantiator{
-			//SPRITE_NODE: NewSpriteFromDataSet,
-		},
+		nodeTree: nodeTree,
 	}
 }
 
@@ -94,7 +61,6 @@ func (t BaseNodeTree) GetNode(path string) Node {
 func (t *BaseNodeTree) SetRootNode(node Node) {
 	t.rootNode = node
 }
-
 
 func NewBaseNodeTree() BaseNodeTree {
 	return BaseNodeTree{}

@@ -147,7 +147,7 @@ func (n *BaseNode) addNewChildFromDataSet(id string, data map[string]any) Replic
 }
 
 // constructors
-func NewBaseNode(id string, nodeType reflect.Type, factory NodeFactory ) BaseNode {
+func NewBaseNode(id string, nodeType reflect.Type, factory NodeFactory) BaseNode {
 	node := BaseNode{
 		Id:        id,
 		nodeType:  strings.ReplaceAll(nodeType.String(), "*", ""), // remove any pointer annotations

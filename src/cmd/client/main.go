@@ -41,9 +41,8 @@ func main() {
 }
 
 func createGameContext(rootNode engine.Node) {
-	nodeCreator := engine.NewBaseNodeCreator()
 	nodeTree := engine.NewBaseNodeTree()
-	engine.NewGameContext(nodeCreator, &nodeTree)
+	engine.NewGameContext(&nodeTree)
 
 	engine.GetGameContext().GetNodeTree().SetRootNode(rootNode)
 }

@@ -11,10 +11,10 @@ const (
 	WARNING
 	ERROR
 	FATAL
-)	
+)
 
 type logger struct {
-	level LogLevel
+	level  LogLevel
 	writer bufio.Writer
 }
 
@@ -26,12 +26,12 @@ func InitLogger(minLogLevel LogLevel, writer bufio.Writer) {
 	}
 
 	log = &logger{
-		level: minLogLevel,
+		level:  minLogLevel,
 		writer: writer,
 	}
 }
 
-func Log( level LogLevel, message string) {
+func Log(level LogLevel, message string) {
 	if log != nil && level >= log.level {
 		log.writer.WriteString(message)
 		log.writer.Flush()
