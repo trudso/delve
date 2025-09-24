@@ -1,6 +1,6 @@
 module github.com/trudso/delve
 
-go 1.24.5
+go 1.25.1
 
 require (
 	github.com/gen2brain/raylib-go/raylib v0.55.1

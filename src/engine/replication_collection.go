@@ -1,5 +1,7 @@
 package engine
 
+import "maps"
+
 type ReplicatableFactory func(id string, ds map[string]any) Replicatable
 
 type ReplicationCollection struct {
@@ -35,9 +37,7 @@ func (r ReplicationCollection) BuildChangeSet() map[string]any {
 	data := map[string]any{}
 	for _, replicatable := range r.replicatables {
 		var ds = BuildChangeSet(replicatable)
-		for k, v := range ds {
-			data[k] = v
-		}
+		maps.Copy(data, ds)
 	}
 
 	if len(data) != 0 {
@@ -53,9 +53,7 @@ func (r ReplicationCollection) BuildSnapshot() map[string]any {
 	data := map[string]any{}
 	for _, replicatable := range r.replicatables {
 		var ds = BuildSnapshot(replicatable)
-		for k, v := range ds {
-			data[k] = v
-		}
+		maps.Copy(data, ds)
 	}
 	if len(data) != 0 {
 		for key, v := range r.fixedFields {

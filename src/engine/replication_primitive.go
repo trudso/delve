@@ -51,7 +51,7 @@ func (r ReplicationPrimitive[T]) BuildSnapshot() map[string]any {
 
 func (r ReplicationPrimitive[T]) ApplyDataSet(dataSet map[string]any) {
 	if d, found := dataSet[r.id]; found {
-		*r.value = d.(T)
+		*r.value = d.(T) // rl.Vector2 contains float32 but map contains float64 when deserializing... What to do ???
 	} else {
 		fmt.Fprintln(os.Stderr, "No primitive data found for:", r.id)
 	}
